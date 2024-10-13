@@ -29,6 +29,9 @@ DELETE_FILES = set({".DS_Store"})
 FILE_METADATA = ["timestamp", "sha256sum", "filename", "absolute_path",
                  "relative_path", "size", "is_project", "git_status"]
 JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)) + "/json")
+JSON_FILES_LIST = "files_list.json"
+JSON_DIRECTORIES_LIST = "directories_list.json"
+JSON_PROJECTS_LIST = "project_roots_list.json"
 
 storage = {}
 files_list = []
@@ -90,24 +93,11 @@ def get_git_status_of_directory(directory):
     return None
 
 
-def iterate_through_directory(directory):
-    start_time = time.time()
-    for root, dirs, files in os.walk(directory,topdown=True):
-        dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
-        for dir in dirs:
-            dir_path = os.path.join(root, dir)
-            dir_git_root = get_git_root_of_directory(dir_path)
-            if dir_git_root:
-                project_roots_list.append(dir_git_root)
-        for file in files:
-            if file in DELETE_FILES:
-                print(f"removing {file}")
-                #os.remove(file)
-            file_path = os.path.join(root, file)
-            file_dict = get_file_metadata(file_path)
-            if file_dict:
-                files_list.append(file_dict)
-    write_json("storage.json", files_list, directories_list, project_roots_list)
+def save_json_files():
+    write_json(JSON_FILES_LIST, files_list)
+    write_json(JSON_DIRECTORIES_LIST, directories_list)
+    write_json(JSON_PROJECTS_LIST, project_roots_list)
+
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
@@ -118,32 +108,10 @@ def iterate_through_projects(projects):
         if status:
             print(f"\t{project}:\n{status}")
 
-def get_storage_dict(files, dirs, project_roots_list) -> dict:
-    storate_dict = {
-                    "timestamp": time.time(),
-                    "files_list": files,
-                    "directories_list": dirs,
-                    "project_roots_list": project_roots_list
-                    }
-    return storate_dict
 
-storage_keys = ["files_list", "directories_list", "project_roots_list"]
-
-def set_storage_variables_from_saved_dict(data):
-    for key, value in data.items():
-        if key in storage_keys:
-            if isinstance([key], set):
-                [key] = set(value)
-            else:
-                [key] = value
-    for x in storage_keys:
-        print([x])
-    #return data
-
-def write_json(filename, files, directories, projects):
-    data = get_storage_dict(files, directories, projects)
+def write_json(filename, data):
     file_path = os.path.join(JSON_DIR, filename)
-    with open(file_path, 'w') as f:
+    with open(file_path, 'w', encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
 
@@ -156,8 +124,16 @@ def read_json(filename):
 
 
 if __name__ == "__main__":
-    read_json("storage.json")
-    if len(project_roots_list) == 0:
+    directories_list = read_json("directories_list.json")
+    if not directories_list:
+        directories_list = []
+    files_list = read_json("files_list.json")
+    if not files_list:
+        files_list = []
+    project_roots_list = read_json("project_roots_list.json")
+    if not project_roots_list:
+        project_roots_list = []
+    if not project_roots_list or len(project_roots_list) == 0:
         iterate_through_directory(CODING_DIR)
     else:
         print("loaded JSON successfully, skipping iterating through directories")
