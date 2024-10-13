@@ -92,6 +92,7 @@ def iterate_through_directory(directory):
             file_dict = get_file_metadata(file_path)
             if file_dict:
                 files_list.append(file_dict)
+    write_json("storage.json", files_list, directories_list, project_roots_list)
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
@@ -102,6 +103,46 @@ def iterate_through_projects(projects):
         if status:
             print(f"\t{project}:\n{status}")
 
+def get_storage_dict(files, dirs, project_roots_list) -> dict:
+    storate_dict = {
+                    "timestamp": time.time(),
+                    "files_list": files,
+                    "directories_list": dirs,
+                    "project_roots_list": project_roots_list
+                    }
+    return storate_dict
+
+storage_keys = ["files_list", "directories_list", "project_roots_list"]
+
+def set_storage_variables_from_saved_dict(data):
+    for key, value in data.items():
+        if key in storage_keys:
+            if isinstance([key], set):
+                [key] = set(value)
+            else:
+                [key] = value
+    for x in storage_keys:
+        print([x])
+    #return data
+
+def write_json(filename, files, directories, projects):
+    data = get_storage_dict(files, directories, projects)
+    file_path = os.path.join(JSON_DIR, filename)
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+
+def read_json(filename):
+    file_path = os.path.join(JSON_DIR, filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            set_storage_variables_from_saved_dict(json.load(f))
+    return None
+
 
 if __name__ == "__main__":
-    iterate_through_directory(CODING_DIR)
+    read_json("storage.json")
+    if len(project_roots_list) == 0:
+        iterate_through_directory(CODING_DIR)
+    else:
+        print("loaded JSON successfully, skipping iterating through directories")
+    iterate_through_projects(project_roots_list)
