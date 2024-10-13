@@ -2,8 +2,10 @@ import os
 import hashlib
 import subprocess
 import json
+from pathlib import Path
 
-CODING_DIR = os.path.dirname(os.path.expanduser("~/Coding/"))
+CODING_DIR = os.path.expanduser("~/Coding")
+CODING_DIR_PATH = Path(CODING_DIR)
 COMMAND_DETERMINE_REPO_ROOT = ("git", "rev-parse", "--show-toplevel")
 COMMAND_DETERMINE_GIT_STATUS = ("git", "status", "--porcelain")
 
@@ -48,6 +50,26 @@ def get_file_metadata(file_path):
     file_dict = {key: value for key, value in locals().items() if key in FILE_FOLDER_METADATA}
     #print(file_dict)
     return file_dict
+
+
+def folder_get_git_root(directory):
+    if os.path.islink(directory):
+        return None
+    for x in Path(directory).parents:
+        if x in project_roots:
+            return x
+        if x == CODING_DIR_PATH:
+            break
+    command = COMMAND_DETERMINE_REPO_ROOT + (directory,)
+    git_root = subprocess.run(command, cwd=directory, capture_output=True)
+    if git_root.returncode == 128:
+        root = ""
+    else:
+        stdout_list = git_root.stdout.decode("utf-8").split("\n")
+        project_root = stdout_list[0]
+        project_roots.add(Path(project_root))
+        root = project_root
+    return root
 
 
 def iterate_through_directory(directory):
