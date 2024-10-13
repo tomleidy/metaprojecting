@@ -37,9 +37,7 @@ storage = {}
 files_list = []
 directories_list = []
 project_roots_paths = set()
-project_roots_list = set()
-
-# TODO: Implement ignore files
+project_roots_list = []
 
 def get_hash(file_path) -> str:
     with open(file_path, "rb") as file:
