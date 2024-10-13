@@ -20,7 +20,9 @@ JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)) + "/json")
 storage = {}
 files_list = []
 directories_list = []
-project_roots = set()
+project_roots_paths = set()
+project_roots_list = set()
+
 # TODO: Implement ignore files
 
 def get_hash(file_path) -> str:
@@ -48,7 +50,7 @@ def get_git_root_of_directory(directory):
     if os.path.islink(directory):
         return None
     for x in Path(directory).parents:
-        if x in project_roots:
+        if x in project_roots_paths:
             return x
         if x == CODING_DIR_PATH:
             break
@@ -59,7 +61,7 @@ def get_git_root_of_directory(directory):
     else:
         stdout_list = git_root.stdout.decode("utf-8").split("\n")
         project_root = stdout_list[0]
-        project_roots.add(Path(project_root))
+        project_roots_paths.add(Path(project_root))
         root = project_root
     return root
 
