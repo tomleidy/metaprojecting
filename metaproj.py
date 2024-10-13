@@ -92,17 +92,49 @@ def get_git_status_of_directory(directory):
         return stdout or ""
     return None
 
+def iterate_helper_directories(root, dirs):
+    for directory in dirs:
+        dir_info = get_folder_metadata(directory)
+        if dir_info:
+            directories_list.append(dir_info)
+        # dir_git_root = get_git_root_of_directory(dir_path)
+        # if dir_git_root:
+        #    project_roots_list.append(dir_git_root)
+    return
+
+
+def iterate_helper_files(root, files):
+    for file in files:
+        if file in DELETE_FILES:
+            print(f"removing {file}")
+            # os.remove(file)
+        file_path = os.path.join(root, file)
+        file_dict = get_file_metadata(file_path)
+        if file_dict:
+            files_list.append(file_dict)
+    return
+
 
 def save_json_files():
     write_json(JSON_FILES_LIST, files_list)
     write_json(JSON_DIRECTORIES_LIST, directories_list)
     write_json(JSON_PROJECTS_LIST, project_roots_list)
 
+
+def iterate_through_directory(directory):
+    start_time = time.time()
+    for root, dirs, files in os.walk(directory, topdown=True):
+        dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
+        iterate_helper_directories(root, dirs)
+        iterate_helper_files(root, files)
+    save_json_files()
     end_time = time.time()
     execution_time = end_time - start_time
-    print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
+    print(f"execution time: {execution_time:.6f} seconds")
+
 
 def iterate_through_projects(projects):
+    return None
     for project in projects:
         status = get_git_status_of_directory(project)
         if status:
