@@ -96,6 +96,12 @@ def iterate_through_directory(directory):
     execution_time = end_time - start_time
     print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
 
+def iterate_through_projects(projects):
+    for project in projects:
+        status = get_git_status_of_directory(project)
+        if status:
+            print(f"\t{project}:\n{status}")
+
 
 if __name__ == "__main__":
     iterate_through_directory(CODING_DIR)
