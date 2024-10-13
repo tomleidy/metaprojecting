@@ -79,6 +79,11 @@ def iterate_through_directory(directory):
     start_time = time.time()
     for root, dirs, files in os.walk(directory,topdown=True):
         dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            dir_git_root = get_git_root_of_directory(dir_path)
+            if dir_git_root:
+                project_roots_list.append(dir_git_root)
         for file in files:
             if file in DELETE_FILES:
                 print(f"removing {file}")
@@ -86,6 +91,7 @@ def iterate_through_directory(directory):
             file_path = os.path.join(root, file)
             file_dict = get_file_metadata(file_path)
             if file_dict:
+                files_list.append(file_dict)
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
