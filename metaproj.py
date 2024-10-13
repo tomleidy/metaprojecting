@@ -22,7 +22,6 @@ files_list = []
 directories_list = []
 project_roots = set()
 # TODO: Implement ignore files
-# TODO: def get_symlink_metadata
 
 def get_hash(file_path) -> str:
     with open(file_path, "rb") as file:
