@@ -106,6 +106,14 @@ def has_git_repo(directory):
             return False
     return True
 
+
+def has_project_indicators(directory):
+    for file in os.listdir(directory):
+        if file in PROJECT_INDICATOR_FILES:
+            return True
+    return False
+
+
 def iterate_helper_directories(root, dirs):
     for directory in dirs:
         dir_info = get_folder_metadata(directory)
