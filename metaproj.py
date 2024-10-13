@@ -7,6 +7,7 @@ import subprocess
 import json
 from pathlib import Path
 import time
+from enum import Enum
 # pylint: disable=W0101,C0116,C0115,W0613
 
 CODING_DIR = os.path.expanduser("~/Coding")
@@ -38,6 +39,14 @@ files_list = []
 directories_list = []
 project_roots_paths = set()
 project_roots_list = []
+
+
+class ProjectStatus(str, Enum):
+    GIT_REPO = "git_repo"
+    PROJECT = "project"
+    POTENTIAL = "potential"
+    UNLIKELY = "unlikely"
+
 
 def get_hash(file_path) -> str:
     with open(file_path, "rb") as file:
