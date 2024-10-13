@@ -29,24 +29,18 @@ def get_hash(file_path) -> str:
         hash = hashlib.file_digest(file, "sha256").hexdigest()
     return hash
 
-
-
 def get_file_metadata(file_path):
     if os.path.islink(file_path):
         return None
-    # get relative path from CODING_DIR
     relative_path = os.path.relpath(os.path.abspath(file_path), CODING_DIR)
-    # get timestamp
     timestamp = os.path.getmtime(file_path)
-    # hash file
     sha256sum = get_hash(file_path)
-    # get filename
     filename = os.path.basename(file_path)
     size = os.path.getsize(file_path)
     subdirectories = 0
     is_project = False # most likely, a lone file not a project
     git_status = subprocess.check_output(COMMAND_DETERMINE_GIT_STATUS + (file_path,)).decode("utf-8")
-    file_dict = {key: value for key, value in locals().items() if key in FILE_FOLDER_METADATA}
+    file_dict = {key: value for key, value in locals().items() if key in FILE_METADATA}
     #print(file_dict)
     return file_dict
 
