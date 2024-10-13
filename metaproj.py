@@ -70,6 +70,15 @@ def get_git_root_of_directory(directory):
     return root
 
 
+def get_git_status_of_directory(directory):
+    command = COMMAND_DETERMINE_GIT_STATUS + (directory,)
+    git_status = subprocess.run(command, cwd=directory, capture_output=True)
+    if git_status.returncode == 0 and git_status.stdout != b"":
+        stdout = git_status.stdout.decode("utf-8")
+        return stdout or ""
+    return None
+
+
 def iterate_through_directory(directory):
     segment_count = []
     for root, dirs, files in os.walk(directory,topdown=True):
