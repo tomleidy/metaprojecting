@@ -1,3 +1,6 @@
+"""
+Gather metadata and organize personal Coding folder
+"""
 import os
 import hashlib
 import subprocess
