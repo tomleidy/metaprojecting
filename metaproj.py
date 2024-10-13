@@ -3,6 +3,7 @@ import hashlib
 import subprocess
 import json
 from pathlib import Path
+import time
 
 CODING_DIR = os.path.expanduser("~/Coding")
 CODING_DIR_PATH = Path(CODING_DIR)
@@ -80,7 +81,7 @@ def get_git_status_of_directory(directory):
 
 
 def iterate_through_directory(directory):
-    segment_count = []
+    start_time = time.time()
     for root, dirs, files in os.walk(directory,topdown=True):
         dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
         for file in files:
@@ -90,15 +91,9 @@ def iterate_through_directory(directory):
             file_path = os.path.join(root, file)
             file_dict = get_file_metadata(file_path)
             if file_dict:
-                files_and_directories.append(file_dict)
-
-        #for dir in dirs:
-            #dir_path = os.path.join(root, dir)
-            #dir_dict = get_file_metadata(dir_path)
-            #files_and_directories.append(dir_dict)
-    print(json.dumps(files_and_directories, indent=4))
-    #print(max(segment_count))
-
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"get_git_root_of_directory execution time: {execution_time:.6f} seconds")
 
 
 if __name__ == "__main__":
