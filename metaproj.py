@@ -4,17 +4,27 @@ import subprocess
 import json
 from pathlib import Path
 import time
+# pylint: disable=W0101,C0116,C0115,W0613
 
 CODING_DIR = os.path.expanduser("~/Coding")
 CODING_DIR_PATH = Path(CODING_DIR)
 COMMAND_DETERMINE_REPO_ROOT = ("git", "rev-parse", "--show-toplevel")
 COMMAND_DETERMINE_GIT_STATUS = ("git", "status", "--porcelain")
 
-PROJECT_INDICATOR_FILES = set({"requirements.txt", "Pipfile", "Pipfile.lock", "pyproject.toml", "setup.py", "package.json", "yarn.lock", "tsconfig.json", "webpack.config.js", "babel.config.js", ".babelrc", ".eslintrc", ".eslintignore", "node_modules", "venv", "CMakeLists.txt", "Makefile", ".git", "Dockerfile", ".env", "__pycache__", ".venv", "venv-mac", "venv-win"})
+PROJECT_INDICATOR_FILES = set({
+    "requirements.txt", "Pipfile", "Pipfile.lock", "pyproject.toml", "setup.py",
+    "package.json", "yarn.lock", "tsconfig.json", "webpack.config.js", "babel.config.js",
+    ".babelrc", ".eslintrc", ".eslintignore", "node_modules", "venv", "CMakeLists.txt",
+    "Makefile", ".git", "Dockerfile", ".env", "__pycache__", ".venv", "venv-mac",
+    "venv-win", "README.md", "LICENSE.md"
+})
 
-DIRECTORIES_DO_NOT_RECURSE_INTO = set({"node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs" })
+DIRECTORIES_DO_NOT_RECURSE_INTO = set({
+    "node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs"
+})
 DELETE_FILES = set({".DS_Store"})
-FILE_METADATA = ["timestamp","sha256sum","filename","absolute_path","relative_path","size","is_project", "git_status", "subdirectories"]
+FILE_METADATA = ["timestamp", "sha256sum", "filename", "absolute_path",
+                 "relative_path", "size", "is_project", "git_status"]
 JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)) + "/json")
 
 storage = {}
@@ -27,10 +37,12 @@ project_roots_list = set()
 
 def get_hash(file_path) -> str:
     with open(file_path, "rb") as file:
-        hash = hashlib.file_digest(file, "sha256").hexdigest()
-    return hash
+        filehash = hashlib.file_digest(file, "sha256").hexdigest()
+    return filehash
+
 
 def get_file_metadata(file_path):
+    # pylint: disable=W0641
     if os.path.islink(file_path):
         return None
     relative_path = os.path.relpath(os.path.abspath(file_path), CODING_DIR)
@@ -68,7 +80,7 @@ def get_git_root_of_directory(directory):
 
 def get_git_status_of_directory(directory):
     command = COMMAND_DETERMINE_GIT_STATUS + (directory,)
-    git_status = subprocess.run(command, cwd=directory, capture_output=True)
+    git_status = subprocess.run(command, cwd=directory, capture_output=True, check=False)
     if git_status.returncode == 0 and git_status.stdout != b"":
         stdout = git_status.stdout.decode("utf-8")
         return stdout or ""
@@ -131,11 +143,12 @@ def write_json(filename, files, directories, projects):
     with open(file_path, 'w') as f:
         json.dump(data, f, indent=4)
 
+
 def read_json(filename):
     file_path = os.path.join(JSON_DIR, filename)
     if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            set_storage_variables_from_saved_dict(json.load(f))
+        with open(file_path, 'r', encoding="utf-8") as f:
+            return json.load(f)
     return None
 
 
