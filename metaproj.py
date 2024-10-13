@@ -11,17 +11,15 @@ COMMAND_DETERMINE_GIT_STATUS = ("git", "status", "--porcelain")
 
 PROJECT_INDICATOR_FILES = set({"requirements.txt", "Pipfile", "Pipfile.lock", "pyproject.toml", "setup.py", "package.json", "yarn.lock", "tsconfig.json", "webpack.config.js", "babel.config.js", ".babelrc", ".eslintrc", ".eslintignore", "node_modules", "venv", "CMakeLists.txt", "Makefile", ".git", "Dockerfile", ".env", "__pycache__", ".venv", "venv-mac", "venv-win"})
 
-FOLDERS_DO_NOT_RECURSE_INTO = set({"node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs" })
+DIRECTORIES_DO_NOT_RECURSE_INTO = set({"node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs" })
 DELETE_FILES = set({".DS_Store"})
+FILE_METADATA = ["timestamp","sha256sum","filename","absolute_path","relative_path","size","is_project", "git_status", "subdirectories"]
+JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)) + "/json")
 
-files_and_directories = []
-FILE_FOLDER_METADATA = ["timestamp","sha256sum","filename","absolute_path","relative_path","size","is_project", "git_status", "subdirectories"]
-
-
-# TODO: Add support for detecting the root of a repo
-# TODO: Count subdirectories
-# TODO: Folders to not recurse into
-# TODO: Implement project detection
+storage = {}
+files_list = []
+directories_list = []
+project_roots = set()
 # TODO: Implement ignore files
 # TODO: def get_symlink_metadata
 
@@ -52,7 +50,7 @@ def get_file_metadata(file_path):
     return file_dict
 
 
-def folder_get_git_root(directory):
+def get_git_root_of_directory(directory):
     if os.path.islink(directory):
         return None
     for x in Path(directory).parents:
@@ -75,7 +73,7 @@ def folder_get_git_root(directory):
 def iterate_through_directory(directory):
     segment_count = []
     for root, dirs, files in os.walk(directory,topdown=True):
-        dirs[:] = [d for d in dirs if d not in FOLDERS_DO_NOT_RECURSE_INTO]
+        dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
         for file in files:
             if file in DELETE_FILES:
                 print(f"removing {file}")
