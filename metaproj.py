@@ -92,6 +92,20 @@ def get_git_status_of_directory(directory):
         return stdout or ""
     return None
 
+
+def has_git_repo(directory):
+    if not os.path.isdir(os.path.join(directory, ".git")):
+        return False
+    need_directories = ["objects", "refs"]
+    need_files = ["HEAD", "config"]
+    for directory in need_directories:
+        if not os.path.isdir(os.path.join(directory, ".git", directory)):
+            return False
+    for file in need_files:
+        if not os.path.isfile(os.path.join(directory, ".git", file)):
+            return False
+    return True
+
 def iterate_helper_directories(root, dirs):
     for directory in dirs:
         dir_info = get_folder_metadata(directory)
