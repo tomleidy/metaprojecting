@@ -151,7 +151,7 @@ def save_json_files():
     write_json(JSON_PROJECTS_LIST, project_roots_list)
 
 
-def iterate_through_directory(directory):
+def iterate_through_all(directory):
     start_time = time.time()
     for root, dirs, files in os.walk(directory, topdown=True):
         dirs[:] = [d for d in dirs if d not in DIRECTORIES_DO_NOT_RECURSE_INTO]
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     if not project_roots_list:
         project_roots_list = []
     if not project_roots_list or len(project_roots_list) == 0:
-        iterate_through_directory(CODING_DIR)
+        iterate_through_all(CODING_DIR)
     else:
         print("loaded JSON successfully, skipping iterating through directories")
     iterate_through_projects(project_roots_list)
