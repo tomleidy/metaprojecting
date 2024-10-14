@@ -65,28 +65,7 @@ def get_file_metadata(file_path):
     filename = os.path.basename(file_path)
     size = os.path.getsize(file_path)
     file_dict = {key: value for key, value in locals().items() if key in FILE_METADATA}
-
     return file_dict
-
-
-def get_git_root_of_directory(directory):
-    if os.path.islink(directory):
-        return None
-    for x in Path(directory).parents:
-        if x in project_roots_paths:
-            return str(x)
-        if x == CODING_DIR_PATH:
-            break
-    command = COMMAND_DETERMINE_REPO_ROOT + (directory,)
-    git_root = subprocess.run(command, cwd=directory, capture_output=True, check=False)
-    if git_root.returncode == 128:
-        root = ""
-    else:
-        stdout_list = git_root.stdout.decode("utf-8").split("\n")
-        project_root = str(stdout_list[0])
-        project_roots_paths.add(Path(project_root))
-        root = project_root
-    return root
 
 
 def get_git_status_of_directory(directory):
