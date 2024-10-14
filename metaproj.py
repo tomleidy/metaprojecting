@@ -116,6 +116,8 @@ def is_directory_excluded(directory):
 
 
 def has_project_indicators(directory):
+    if is_directory_excluded(directory):
+        return False
     for file in os.listdir(directory):
         if file in PROJECT_INDICATOR_FILES:
             return True
