@@ -81,16 +81,23 @@ def get_git_status_of_directory(directory):
 
 
 def has_git_repo(directory):
-    if not os.path.isdir(os.path.join(directory, ".git")):
+    git_path = os.path.join(directory, ".git")
+    if not os.path.exists(git_path):
+        return False
+    if not os.path.isdir(git_path):
+        print(f"{git_path} is apparently not a directory")
         return False
     need_directories = ["objects", "refs"]
     need_files = ["HEAD", "config"]
-    for directory in need_directories:
-        if not os.path.isdir(os.path.join(directory, ".git", directory)):
+    for need_dir in need_directories:
+        need_path = os.path.join(git_path, need_dir)
+        if not os.path.isdir(need_path):
             return False
-    for file in need_files:
-        if not os.path.isfile(os.path.join(directory, ".git", file)):
+    for need_file in need_files:
+        need_path = os.path.join(git_path, need_file)
+        if not os.path.isfile(need_path):
             return False
+    project_roots_list.append(directory)
     return True
 
 
