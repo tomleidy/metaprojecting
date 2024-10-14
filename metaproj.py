@@ -101,6 +101,20 @@ def has_git_repo(directory):
     return True
 
 
+def is_directory_excluded(directory):
+    dir_path = Path(directory)
+    for parent in dir_path.parents:
+        last_dir = str(parent).split("/")[-1]
+        if "pip" in last_dir:
+            print(f"\n{last_dir=}\n{last_dir in DIRECTORIES_DO_NOT_RECURSE_INTO=}")
+        if last_dir in DIRECTORIES_DO_NOT_RECURSE_INTO:
+            print(f"excluded: {directory}")
+            return True
+        if parent == CODING_DIR_PATH:
+            break
+    return False
+
+
 def has_project_indicators(directory):
     for file in os.listdir(directory):
         if file in PROJECT_INDICATOR_FILES:
