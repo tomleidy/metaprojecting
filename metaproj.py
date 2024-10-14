@@ -126,12 +126,10 @@ def has_project_indicators(directory):
 
 def iterate_helper_directories(root, dirs):
     for directory in dirs:
-        dir_info = get_folder_metadata(directory)
+        dir_path = os.path.join(root, directory)
+        dir_info = get_directory_metadata(dir_path)
         if dir_info:
             directories_list.append(dir_info)
-        # dir_git_root = get_git_root_of_directory(dir_path)
-        # if dir_git_root:
-        #    project_roots_list.append(dir_git_root)
     return
 
 
