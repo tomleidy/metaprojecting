@@ -24,11 +24,16 @@ PROJECT_INDICATOR_FILES = set({
 })
 
 DIRECTORIES_DO_NOT_RECURSE_INTO = set({
-    "node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs"
+    "node_modules", "venv", "__pycache__", ".git", "build", "dist", "docs",
+    "venv-mac", "venv-win", ".venv", ".pytest_cache", "pytest_cache",
+    ".idea", ".vscode", "env", ".tox", "migrations", "target", ".coverage",
+    ".gradle", "coverage", ".history", ".sass-cache", "out", "temp", "tmp"
 })
+
+
 DELETE_FILES = set({".DS_Store"})
 FILE_METADATA = ["timestamp", "sha256sum", "filename", "absolute_path",
-                 "relative_path", "size", "is_project", "git_status"]
+                 "relative_path", "size"]
 JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)) + "/json")
 JSON_FILES_LIST = "files_list.json"
 JSON_DIRECTORIES_LIST = "directories_list.json"
