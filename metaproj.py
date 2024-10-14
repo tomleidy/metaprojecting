@@ -42,7 +42,6 @@ JSON_PROJECTS_LIST = "project_roots_list.json"
 storage = {}
 files_list = []
 directories_list = []
-project_roots_paths = set()
 project_roots_list = []
 
 
@@ -64,7 +63,6 @@ def get_file_metadata(file_path):
     if os.path.islink(file_path):
         return None
     relative_path = os.path.relpath(os.path.abspath(file_path), CODING_DIR)
-    print(relative_path)
     timestamp = os.path.getmtime(file_path)
     sha256sum = get_hash(file_path)
     filename = os.path.basename(file_path)
