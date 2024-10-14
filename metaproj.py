@@ -124,6 +124,29 @@ def has_project_indicators(directory):
     return False
 
 
+def get_directory_metadata(directory):
+    if os.path.islink(directory):
+        return None
+    if not os.path.isdir(directory):
+        return None
+    files = os.listdir(directory)
+    git_repo = has_git_repo(directory)
+    if git_repo:
+        project_status = ProjectStatus.GIT_REPO
+    else:
+        if has_project_indicators(directory):
+            project_status = ProjectStatus.POTENTIAL
+        else:
+            project_status = ProjectStatus.UNLIKELY
+    info = {
+        "relative_path": os.path.relpath(os.path.abspath(directory), CODING_DIR),
+        "project_status": project_status,
+        "files_count": len(files),
+        "timestamp": os.path.getmtime(directory)
+    }
+    return info
+
+
 def iterate_helper_directories(root, dirs):
     for directory in dirs:
         dir_path = os.path.join(root, directory)
