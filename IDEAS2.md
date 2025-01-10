@@ -41,6 +41,7 @@ if project selected:
 - X/A/N: select (as part of multi-select), all, none (in category)
     - preserve selection even if
 - C: open IDE to project (e.g., code)
+- O: order by
 
 if category selected:
 - Enter: expand/close category
@@ -112,4 +113,3 @@ So maybe keep track of remote origin in the git status. And if it matches and th
 
 
 """
-
